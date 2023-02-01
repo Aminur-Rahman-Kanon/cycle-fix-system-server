@@ -54,10 +54,14 @@ app.post('/bookings', async (req, res) => {
     .catch(err => res.json({ status: 'error' }));
 })
 
+// app.listen('8000', () => {
+//     console.log('server running on port 8000');
+// })
 
+const port = process.env.PORT
 
-
-
-app.listen('8000', () => {
-    console.log('server running on port 8000');
+app.listen(port || '8000', (err) => {
+    if (!err)
+        console.log('server listening on port 8000');
+    else console.log(err);
 })
