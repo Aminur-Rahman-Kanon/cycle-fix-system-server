@@ -38,15 +38,14 @@ app.post('/bookings', async (req, res) => {
         const test1 = {};
         let index = 0;
         filteredDates.map(item => {
-            const date = item.date.split(' ').slice(1).join(' ');
-            if (test1.hasOwnProperty(date)){
+            if (test1.hasOwnProperty(item.date)){
                 index ++;
-                test1[date][index] = item;
+                test1[item.date][index] = item;
             }
             else {
-                test1[date] = {};
+                test1[item.date] = {};
                 index = 0;
-                test1[date][index] = item;
+                test1[item.date][index] = item;
             }
         })
         res.json({ status: 'success', data:test1 });
