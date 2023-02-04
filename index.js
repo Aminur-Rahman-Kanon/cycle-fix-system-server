@@ -54,9 +54,34 @@ app.post('/bookings', async (req, res) => {
     .catch(err => res.json({ status: 'error' }));
 })
 
-// app.listen('8000', () => {
-//     console.log('server running on port 8000');
-// })
+app.post('/apply-job', async (req, res) => {
+    const { email, status } = req.body;
+    const jobContent = await bookingModel.findOne({ email })
+    jobContent.status = status;
+
+    bookingModel.collection.updateOne({email}, {$set: jobContent}).then(response => res.json({ status: 'success' })).catch(err => res.json({ status: 'error' }))
+})
+
+app.post('/complete-job', async (req, res) => {
+    const { email, status } = req.body;
+    const jobContent = await bookingModel.findOne({ email })
+    if (!jobContent) return res.json({ status: 'booking not found' });
+
+    jobContent.status = status;
+    console.log(jobContent);
+
+    bookingModel.collection.updateOne({email}, {$set: jobContent}).then(response => res.json({ status: 'success' })).catch(err => res.json({ status: 'error' }))
+})
+
+app.post('/delete-job', async (req, res) => {
+    const { email } = req.body;
+    const jobContent = await bookingModel.findOne({ email })
+
+    if (!jobContent) return res.json({ status: 'booking not found' })
+
+    bookingModel.collection.deleteOne({email}).then(response => res.json({ status: 'success' })).catch(err => res.json({ status: 'error' }))
+})
+
 
 const port = process.env.PORT
 
