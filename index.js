@@ -65,12 +65,16 @@ app.post('/apply-job', async (req, res) => {
 app.post('/complete-job', async (req, res) => {
     const { email, status } = req.body;
     const jobContent = await bookingModel.findOne({ email })
-    if (!jobContent) return res.json({ status: 'booking not found' });
 
     jobContent.status = status;
-    console.log(jobContent);
 
-    bookingModel.collection.updateOne({email}, {$set: jobContent}).then(response => res.json({ status: 'success' })).catch(err => res.json({ status: 'error' }))
+    bookingModel.collection.updateOne({email}, {$set: jobContent}).then(response => {
+        const { matchedCount, modifiedCount } = response
+        if (matchedCount > 0 && modifiedCount > 0){
+            console.log(response)
+            return res.json({ status: 'success' })
+        }
+    }).catch(err => res.json({ status: 'error' }))
 })
 
 app.post('/delete-job', async (req, res) => {
