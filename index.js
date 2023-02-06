@@ -54,6 +54,22 @@ app.post('/bookings', async (req, res) => {
     .catch(err => res.json({ status: 'error' }));
 })
 
+app.post('/add-booking', async (req, res) => {
+    const { service, authCode, packagePrice, totalPrice, deposit, bikeDetails, firstName, lastName, email, phone, date, due } = req.body;
+
+    const existUser = await bookingModel.findOne({ email });
+
+    if (existUser) return res.json({ status: 'booking exist' });
+
+    try {
+        await bookingModel.create({
+            service, authCode, packagePrice, totalPrice, deposit, bikeDetails, firstName, lastName, email, phone, date, due
+        }).then(response => res.json({ status: 'success' })).catch(err => res.json({ status: 'error' }))
+    } catch (error) {
+        res.json({ status: 'network error' })
+    }
+})
+
 app.post('/apply-job', async (req, res) => {
     const { email, status } = req.body;
     const jobContent = await bookingModel.findOne({ email })

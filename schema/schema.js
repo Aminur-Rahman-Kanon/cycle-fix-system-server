@@ -34,8 +34,6 @@ const bookingSchema = {
     totalPrice: Number,
     due: Number,
     deposit: Number,
-    barcode: Object,
-    paymentStatus: String,
     authCode: String,
     firstName: String,
     lastName: String,
