@@ -31,8 +31,7 @@ const xiaomiModel = mongoose.model('xiaomi-query', xiaomiQuery);
 
 
 //route
-
-app.post('/bookings', async (req, res) => {
+app.use('/bookings', (req, res) => {
     bookingModel.find({}).then(response => {
         const filteredDates = response.sort((a, b) => new Date(a.date) - new Date(b.date));
         const test1 = {};
@@ -48,11 +47,26 @@ app.post('/bookings', async (req, res) => {
                 test1[item.date][index] = item;
             }
         })
-        res.json({ status: 'success', data:test1 });
+        res.json({ status: 'success', data: test1 });
     
     })
     .catch(err => res.json({ status: 'error' }));
 })
+
+app.use('/cams-query', (req, res) => {
+    camsEnquiryModel.find({}).then(response => res.json({ status: 'success', data: response })).catch(err => res.json({ status: 'error' }))
+})
+
+app.use('/add-cams-bookings', (req, res) => {
+    const {name, email, phone, message} = req.body;
+
+    camsEnquiryModel.create({
+        name, email, phoneNumber: phone, message
+    }).then(response => {
+        res.json({ status: 'success' })
+    }).catch(err => res.json({ status: 'network error' }))
+})
+
 
 app.post('/add-booking', async (req, res) => {
     const { service, authCode, packagePrice, totalPrice, deposit, bikeDetails, firstName, lastName, email, phone, date, due } = req.body;
@@ -61,6 +75,18 @@ app.post('/add-booking', async (req, res) => {
 
     if (existUser) return res.json({ status: 'booking exist' });
 
+    try {
+        await bookingModel.create({
+            service, authCode, packagePrice, totalPrice, deposit, bikeDetails, firstName, lastName, email, phone, date, due
+        }).then(response => res.json({ status: 'success' })).catch(err => res.json({ status: 'error' }))
+    } catch (error) {
+        res.json({ status: 'network error' })
+    }
+})
+
+app.post('/add-anyway', async (req, res) => {
+    const { service, authCode, packagePrice, totalPrice, deposit, bikeDetails, firstName, lastName, email, phone, date, due } = req.body;
+    
     try {
         await bookingModel.create({
             service, authCode, packagePrice, totalPrice, deposit, bikeDetails, firstName, lastName, email, phone, date, due
