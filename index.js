@@ -3,8 +3,10 @@ const app = express();
 require('dotenv').config();
 const cors = require('cors');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 
 app.use(express.json());
+// app.use(bodyParser.json())
 app.use(cors());
 
 //mongoDB initialization
@@ -31,7 +33,7 @@ const xiaomiModel = mongoose.model('xiaomi-query', xiaomiQuery);
 
 
 //route
-app.use('/bookings', (req, res) => {
+app.get('/bookings', (req, res) => {
     bookingModel.find({}).then(response => {
         const filteredDates = response.sort((a, b) => new Date(a.date) - new Date(b.date));
         const test1 = {};
@@ -53,11 +55,11 @@ app.use('/bookings', (req, res) => {
     .catch(err => res.json({ status: 'error' }));
 })
 
-app.use('/cams-query', (req, res) => {
+app.get('/cams-query', (req, res) => {
     camsEnquiryModel.find({}).then(response => res.json({ status: 'success', data: response })).catch(err => res.json({ status: 'error' }))
 })
 
-app.use('/add-cams-bookings', (req, res) => {
+app.get('/add-cams-bookings', (req, res) => {
     const {name, email, phone, message} = req.body;
 
     camsEnquiryModel.create({
@@ -68,7 +70,7 @@ app.use('/add-cams-bookings', (req, res) => {
 })
 
 
-app.post('/add-booking', async (req, res) => {
+app.get('/add-booking', async (req, res) => {
     const { service, authCode, packagePrice, totalPrice, deposit, bikeDetails, firstName, lastName, email, phone, date, due } = req.body;
 
     const existUser = await bookingModel.findOne({ email });
@@ -84,7 +86,7 @@ app.post('/add-booking', async (req, res) => {
     }
 })
 
-app.post('/add-anyway', async (req, res) => {
+app.get('/add-anyway', async (req, res) => {
     const { service, authCode, packagePrice, totalPrice, deposit, bikeDetails, firstName, lastName, email, phone, date, due } = req.body;
     
     try {
@@ -96,7 +98,7 @@ app.post('/add-anyway', async (req, res) => {
     }
 })
 
-app.post('/apply-job', async (req, res) => {
+app.get('/apply-job', async (req, res) => {
     const { email, status } = req.body;
     const jobContent = await bookingModel.findOne({ email })
     jobContent.status = status;
@@ -104,7 +106,7 @@ app.post('/apply-job', async (req, res) => {
     bookingModel.collection.updateOne({email}, {$set: jobContent}).then(response => res.json({ status: 'success' })).catch(err => res.json({ status: 'error' }))
 })
 
-app.post('/complete-job', async (req, res) => {
+app.get('/complete-job', async (req, res) => {
     const { email, status } = req.body;
     const jobContent = await bookingModel.findOne({ email })
 
@@ -119,7 +121,7 @@ app.post('/complete-job', async (req, res) => {
     }).catch(err => res.json({ status: 'error' }))
 })
 
-app.post('/delete-job', async (req, res) => {
+app.get('/delete-job', async (req, res) => {
     const { email } = req.body;
     const jobContent = await bookingModel.findOne({ email })
 
@@ -128,16 +130,48 @@ app.post('/delete-job', async (req, res) => {
     bookingModel.collection.deleteOne({email}).then(response => res.json({ status: 'success' })).catch(err => res.json({ status: 'error' }))
 })
 
-app.use('/xiaomi-query', (req, res) => {
+app.get('/xiaomi-query', (req, res) => {
     xiaomiModel.find({}).then(response => res.json({ status: 'success', data: response })).catch(err => res.json({ status: 'error' }))
 })
 
-app.use('/add-xiaomi-booking', (req, res) => {
+app.get('/add-xiaomi-booking', (req, res) => {
     const {service, date, name, email, phone} = req.body;
 
     xiaomiModel.create({
         service, date, name, email, phone
     }).then(response => res.json({ status: 'success' })).catch(err => res.json({ status: 'error' }))
+})
+
+app.get('/contact-query', (req, res) => {
+    contactQueryModel.find({}).then(response => res.json({ status: 'success', data : response })).catch(err => res.json({ status: 'error' }))
+})
+
+app.post('/delete-contact-query', async (req, res) => {
+    const { email } = req.body;
+    const findEmail = await contactQueryModel.findOne({ email });
+
+    if (!findEmail) return res.json({ status: 'not found' })
+
+    contactQueryModel.collection.deleteOne({email}).then(response => res.json({ status: 'success' })).catch(err => res.json({ status: 'error' }));
+})
+
+app.get('/feedback', (req, res) => {
+    testimonialModel.find({}).then(response => res.json({ status: 'success', data: response })).catch(err => res.json({ status: 'error' }))
+})
+
+app.get('/registered-user', async (req, res) => {
+    await registrationModel.find({}).then(response => res.json({ status: 'success', data: response })).catch(err => res.json({ status: 'error' }))
+})
+
+app.post('/delete-registered-user', async (req, res) => {
+    const { email } = req.body;
+
+    console.log(email)
+
+    const searchUser = await registrationModel.findOne({ email });
+    if (!searchUser) return res.json({ status: 'not found' });
+
+    registrationModel.collection.deleteOne({ email }).then(response => res.json({ status: 'success' })).catch(err => res.json({ status: 'error' }))
 })
 
 const port = process.env.PORT
