@@ -128,6 +128,17 @@ app.post('/delete-job', async (req, res) => {
     bookingModel.collection.deleteOne({email}).then(response => res.json({ status: 'success' })).catch(err => res.json({ status: 'error' }))
 })
 
+app.use('/xiaomi-query', (req, res) => {
+    xiaomiModel.find({}).then(response => res.json({ status: 'success', data: response })).catch(err => res.json({ status: 'error' }))
+})
+
+app.use('/add-xiaomi-booking', (req, res) => {
+    const {service, date, name, email, phone} = req.body;
+
+    xiaomiModel.create({
+        service, date, name, email, phone
+    }).then(response => res.json({ status: 'success' })).catch(err => res.json({ status: 'error' }))
+})
 
 const port = process.env.PORT
 

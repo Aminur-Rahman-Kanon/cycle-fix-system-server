@@ -44,7 +44,11 @@ const bookingSchema = {
 
 const xiaomiQuery = {
     service: String,
-    price: String
+    price: String,
+    date: String,
+    name: String,
+    email: String,
+    phone: String
 }
 
 module.exports = {
