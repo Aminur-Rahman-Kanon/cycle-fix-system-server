@@ -1,7 +1,8 @@
 const testimonialSchema = {
     comment: {type: String, required: true},
     name: {type: String, required: true},
-    rating: {type: 'Number', required: true}
+    rating: {type: 'Number', required: true},
+    email: {type: String, required: true}
 }
 
 const camsEnquirySchema = {

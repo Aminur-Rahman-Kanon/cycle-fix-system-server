@@ -159,6 +159,15 @@ app.get('/feedback', (req, res) => {
     testimonialModel.find({}).then(response => res.json({ status: 'success', data: response })).catch(err => res.json({ status: 'error' }))
 })
 
+app.post('/delete-feedback', async (req, res) => {
+    const { email } = req.body;
+    const findEmail = await testimonialModel.findOne({ email });
+
+    if (!findEmail) return res.json({ status: 'not found' })
+
+    testimonialModel.collection.deleteOne({email}).then(response => res.json({ status: 'success' })).catch(err => res.json({ status: 'error' }));
+})
+
 app.get('/registered-user', async (req, res) => {
     await registrationModel.find({}).then(response => res.json({ status: 'success', data: response })).catch(err => res.json({ status: 'error' }))
 })
