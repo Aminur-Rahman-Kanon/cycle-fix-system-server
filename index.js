@@ -70,7 +70,7 @@ app.get('/add-cams-bookings', (req, res) => {
 })
 
 
-app.get('/add-booking', async (req, res) => {
+app.post('/add-booking', async (req, res) => {
     const { service, authCode, packagePrice, totalPrice, deposit, bikeDetails, firstName, lastName, email, phone, date, due } = req.body;
 
     const existUser = await bookingModel.findOne({ email });
