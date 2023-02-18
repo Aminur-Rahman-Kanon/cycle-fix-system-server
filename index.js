@@ -36,20 +36,20 @@ const xiaomiModel = mongoose.model('xiaomi-query', xiaomiQuery);
 app.get('/bookings', (req, res) => {
     bookingModel.find({}).then(response => {
         const filteredDates = response.sort((a, b) => new Date(a.date) - new Date(b.date));
-        const test1 = {};
+        const data = {};
         let index = 0;
         filteredDates.map(item => {
             if (test1.hasOwnProperty(item.date)){
                 index ++;
-                test1[item.date][index] = item;
+                data[item.date][index] = item;
             }
             else {
-                test1[item.date] = {};
+                data[item.date] = {};
                 index = 0;
-                test1[item.date][index] = item;
+                data[item.date][index] = item;
             }
         })
-        res.json({ status: 'success', data: test1 });
+        res.json({ status: 'success', data });
     
     })
     .catch(err => res.json({ status: 'error' }));
@@ -59,7 +59,7 @@ app.get('/cams-query', (req, res) => {
     camsEnquiryModel.find({}).then(response => res.json({ status: 'success', data: response })).catch(err => res.json({ status: 'error' }))
 })
 
-app.get('/add-cams-bookings', (req, res) => {
+app.post('/add-cams-bookings', (req, res) => {
     const {name, email, phone, message} = req.body;
 
     camsEnquiryModel.create({
@@ -86,7 +86,7 @@ app.post('/add-booking', async (req, res) => {
     }
 })
 
-app.get('/add-anyway', async (req, res) => {
+app.post('/add-anyway', async (req, res) => {
     const { service, authCode, packagePrice, totalPrice, deposit, bikeDetails, firstName, lastName, email, phone, date, due } = req.body;
     
     try {
@@ -98,7 +98,7 @@ app.get('/add-anyway', async (req, res) => {
     }
 })
 
-app.get('/apply-job', async (req, res) => {
+app.post('/apply-job', async (req, res) => {
     const { email, status } = req.body;
     const jobContent = await bookingModel.findOne({ email })
     jobContent.status = status;
@@ -106,7 +106,7 @@ app.get('/apply-job', async (req, res) => {
     bookingModel.collection.updateOne({email}, {$set: jobContent}).then(response => res.json({ status: 'success' })).catch(err => res.json({ status: 'error' }))
 })
 
-app.get('/complete-job', async (req, res) => {
+app.post('/complete-job', async (req, res) => {
     const { email, status } = req.body;
     const jobContent = await bookingModel.findOne({ email })
 
@@ -121,7 +121,7 @@ app.get('/complete-job', async (req, res) => {
     }).catch(err => res.json({ status: 'error' }))
 })
 
-app.get('/delete-job', async (req, res) => {
+app.post('/delete-job', async (req, res) => {
     const { email } = req.body;
     const jobContent = await bookingModel.findOne({ email })
 
@@ -134,7 +134,7 @@ app.get('/xiaomi-query', (req, res) => {
     xiaomiModel.find({}).then(response => res.json({ status: 'success', data: response })).catch(err => res.json({ status: 'error' }))
 })
 
-app.get('/add-xiaomi-booking', (req, res) => {
+app.post('/add-xiaomi-booking', (req, res) => {
     const {service, date, name, email, phone} = req.body;
 
     xiaomiModel.create({
