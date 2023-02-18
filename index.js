@@ -39,7 +39,7 @@ app.get('/bookings', (req, res) => {
         const data = {};
         let index = 0;
         filteredDates.map(item => {
-            if (test1.hasOwnProperty(item.date)){
+            if (data.hasOwnProperty(item.date)){
                 index ++;
                 data[item.date][index] = item;
             }
@@ -49,7 +49,7 @@ app.get('/bookings', (req, res) => {
                 data[item.date][index] = item;
             }
         })
-        res.json({ status: 'success', data });
+        return res.json({ status: 'success', data });
     
     })
     .catch(err => res.json({ status: 'error' }));
